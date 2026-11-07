@@ -145,14 +145,22 @@ class TestSerialBridgeMock(unittest.TestCase):
 
     def setUp(self):
         # Setup clean test auth and log files
+        import gc
+        gc.collect()
         self.test_log_file = APP_DIR / "test_audit.log"
         self.test_db_file = APP_DIR / "test_access_control.db"
 
         # Remove previous test artifacts if present
         if self.test_log_file.exists():
-            self.test_log_file.unlink()
+            try:
+                self.test_log_file.unlink()
+            except Exception:
+                pass
         if self.test_db_file.exists():
-            self.test_db_file.unlink()
+            try:
+                self.test_db_file.unlink()
+            except Exception:
+                pass
 
         self.auth_service = AuthService(
             users_file=APP_DIR / "users.json",

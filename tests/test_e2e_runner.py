@@ -195,6 +195,7 @@ def _patch_quick_scenario_5():
             serial_instance=self.bridge_serial,
             lockout_duration=3.0,
         )
+        self.bridge.lockout_duration = 3.0
         self.bridge.start()
 
         for p in ["0001", "0002", "0003"]:
