@@ -1,0 +1,27 @@
+BÁO CÁO PHÂN TÍCH HỆ THỐNG KIỂM SOÁT TRUY CẬP
+==================================================
+Tổng số bản ghi           : 25
+
+1. Kết quả truy cập
+   Thành công             : 5 (50.0%)
+   Thất bại               : 5 (50.0%)
+
+2. Số lần theo sự kiện
+   Mở cửa                 : 5
+   Đóng cửa               : 5
+   Kích hoạt báo động     : 5
+
+3. Theo thời gian (lượt truy cập)
+   Giờ cao điểm           : 23h
+   Số ngày có dữ liệu     : 2
+
+4. Kiểm tra độ chính xác (Pandas so với SQL)
+   Thành công  Pandas=5     SQL=5     -> KHỚP
+   Thất bại    Pandas=5     SQL=5     -> KHỚP
+   Mở cửa      Pandas=5     SQL=5     -> KHỚP
+   Đóng cửa    Pandas=5     SQL=5     -> KHỚP
+   Báo động    Pandas=5     SQL=5     -> KHỚP
+   Tổng tỷ lệ thành công + thất bại = 100.00%
+   Kết luận               : ĐẠT
+
+Biểu đồ: Charts/success_failed.png, Charts/access_ratio.png, Charts/access_time.png

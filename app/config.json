@@ -1,0 +1,13 @@
+{
+  "serial": {
+    "port": "COM2",
+    "baudrate": 9600,
+    "timeout": 1.0,
+    "lockout_duration": 30.0
+  },
+  "auth": {
+    "users_file": "users.json",
+    "log_file": "audit.log",
+    "db_file": "access_control.db"
+  }
+}

@@ -1,0 +1,5 @@
+# Desktop Python Dependencies for Smart PIN Door Lock System
+flet>=0.21.0
+pyserial>=3.5
+matplotlib>=3.7.0
+pandas>=2.0.0

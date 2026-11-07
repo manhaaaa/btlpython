@@ -1,0 +1,20 @@
+[
+  {
+    "id": "USR001",
+    "name": "Nguyễn Văn A",
+    "pin": "1234",
+    "role": "user"
+  },
+  {
+    "id": "USR002",
+    "name": "Trần Thị B",
+    "pin": "5678",
+    "role": "user"
+  },
+  {
+    "id": "ADM001",
+    "name": "Quản Trị Viên",
+    "pin": "9999",
+    "role": "admin"
+  }
+]
