@@ -178,7 +178,7 @@ class SerialBridge:
                 )
                 return "L"
 
-            # 2. Authenticate PIN
+            # 2. Authenticate PIN (Master PIN or User PIN)
             user = None
             if self.auth_callback:
                 user = self.auth_callback(pin)

@@ -8,6 +8,9 @@
   "auth": {
     "users_file": "users.json",
     "log_file": "audit.log",
-    "db_file": "access_control.db"
+    "db_file": "access_control.db",
+    "master_pin": "1234",
+    "admin_username": "admin",
+    "admin_password": "1234"
   }
 }
