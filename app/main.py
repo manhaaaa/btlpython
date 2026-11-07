@@ -191,7 +191,7 @@ class DoorLockApp:
             title=ft.Column(
                 [
                     ft.Text("HỆ THỐNG KHÓA CỬA THÔNG MINH PIN", size=18, weight=ft.FontWeight.BOLD),
-                    ft.Text(subtitle_text, size=12, color=ft.Colors.WHITE70),
+                    ft.Text(subtitle_text, size=12, color=ft.Colors.WHITE_70),
                 ],
                 spacing=2,
             ),
@@ -202,7 +202,7 @@ class DoorLockApp:
         # Status Cards
         self.door_icon = ft.Icon(ft.Icons.LOCK, size=48, color=ft.Colors.AMBER)
         self.door_label = ft.Text("CỬA ĐANG ĐÓNG", size=20, weight=ft.FontWeight.BOLD, color=ft.Colors.AMBER)
-        self.door_desc = ft.Text("Chờ tín hiệu từ PIC16F877A U1", size=12, color=ft.Colors.WHITE60)
+        self.door_desc = ft.Text("Chờ tín hiệu từ PIC16F877A U1", size=12, color=ft.Colors.WHITE_60)
 
         self.door_card = ft.Card(
             content=ft.Container(
@@ -211,7 +211,7 @@ class DoorLockApp:
                         self.door_icon,
                         ft.Column(
                             [
-                                ft.Text("TRẠNG THÁI CỬA", size=11, color=ft.Colors.WHITE54, weight=ft.FontWeight.BOLD),
+                                ft.Text("TRẠNG THÁI CỬA", size=11, color=ft.Colors.WHITE_54, weight=ft.FontWeight.BOLD),
                                 self.door_label,
                                 self.door_desc,
                             ],
@@ -230,7 +230,7 @@ class DoorLockApp:
         if not self.is_android:
             self.serial_icon = ft.Icon(ft.Icons.CABLE, size=48, color=ft.Colors.RED)
             self.serial_label = ft.Text("MẤT KẾT NỐI", size=20, weight=ft.FontWeight.BOLD, color=ft.Colors.RED)
-            self.serial_desc = ft.Text("Cổng COM: COM2 | Baud: 9600 8N1", size=12, color=ft.Colors.WHITE60)
+            self.serial_desc = ft.Text("Cổng COM: COM2 | Baud: 9600 8N1", size=12, color=ft.Colors.WHITE_60)
             self.serial_card = ft.Card(
                 content=ft.Container(
                     content=ft.Row(
@@ -238,7 +238,7 @@ class DoorLockApp:
                             self.serial_icon,
                             ft.Column(
                                 [
-                                    ft.Text("KẾT NỐI SERIAL COMPIM", size=11, color=ft.Colors.WHITE54, weight=ft.FontWeight.BOLD),
+                                    ft.Text("KẾT NỐI SERIAL COMPIM", size=11, color=ft.Colors.WHITE_54, weight=ft.FontWeight.BOLD),
                                     self.serial_label,
                                     self.serial_desc,
                                 ],
@@ -255,7 +255,7 @@ class DoorLockApp:
         else:
             self.serial_icon = ft.Icon(ft.Icons.PHONE_ANDROID, size=48, color=ft.Colors.CYAN)
             self.serial_label = ft.Text("CHẾ ĐỘ DEMO", size=20, weight=ft.FontWeight.BOLD, color=ft.Colors.CYAN)
-            self.serial_desc = ft.Text("Độc lập phần cứng | Không yêu cầu PySerial", size=12, color=ft.Colors.WHITE60)
+            self.serial_desc = ft.Text("Độc lập phần cứng | Không yêu cầu PySerial", size=12, color=ft.Colors.WHITE_60)
             self.serial_card = ft.Card(
                 content=ft.Container(
                     content=ft.Row(
@@ -263,7 +263,7 @@ class DoorLockApp:
                             self.serial_icon,
                             ft.Column(
                                 [
-                                    ft.Text("NỀN TẢNG ANDROID", size=11, color=ft.Colors.WHITE54, weight=ft.FontWeight.BOLD),
+                                    ft.Text("NỀN TẢNG ANDROID", size=11, color=ft.Colors.WHITE_54, weight=ft.FontWeight.BOLD),
                                     self.serial_label,
                                     self.serial_desc,
                                 ],
@@ -360,7 +360,7 @@ class DoorLockApp:
                     ft.Row(
                         [
                             ft.Text("NHẬT KÝ RA VÀO THỜI GIAN THỰC", size=15, weight=ft.FontWeight.BOLD),
-                            ft.Text("(Dữ liệu được bảo vệ an toàn - PIN luôn che dạng ****)", size=12, color=ft.Colors.WHITE54),
+                            ft.Text("(Dữ liệu được bảo vệ an toàn - PIN luôn che dạng ****)", size=12, color=ft.Colors.WHITE_54),
                         ],
                         alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
                     ),
@@ -399,7 +399,7 @@ class DoorLockApp:
                             ft.Text(
                                 "(Nguồn: Cấu hình an toàn / Không chứa PIN thô)",
                                 size=12,
-                                color=ft.Colors.WHITE54,
+                                color=ft.Colors.WHITE_54,
                             ),
                         ],
                         alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
@@ -601,14 +601,14 @@ class DoorLockApp:
         rows = []
         for u in users:
             role = u.get("role", "user")
-            role_color = ft.Colors.LIGHT_BLUE if role == "admin" else ft.Colors.WHITE70
+            role_color = ft.Colors.LIGHT_BLUE if role == "admin" else ft.Colors.WHITE_70
             rows.append(
                 ft.DataRow(
                     cells=[
                         ft.DataCell(ft.Text(str(u.get("id", "")))),
                         ft.DataCell(ft.Text(str(u.get("name", "")))),
                         ft.DataCell(ft.Text(role, color=role_color, weight=ft.FontWeight.BOLD)),
-                        ft.DataCell(ft.Text("****", color=ft.Colors.WHITE54)),
+                        ft.DataCell(ft.Text("****", color=ft.Colors.WHITE_54)),
                     ]
                 )
             )

@@ -793,6 +793,7 @@ class TestTier3_CrossFeatureCombinations(unittest.TestCase):
             serial_instance=self.bridge_serial,
             lockout_duration=2.0,
         )
+        self.bridge.lockout_duration = 2.0
         self.bridge.start()
         self.sim = FirmwareKeypadSimulator()
 
@@ -875,11 +876,17 @@ class TestTier3_CrossFeatureCombinations(unittest.TestCase):
         # Port disconnects
         self.bridge_serial.close()
         self.assertFalse(self.bridge.is_connected())
+        self.bridge.stop()
 
         # Reconnect with new pair
         b2, c2 = create_mock_serial_pair()
-        self.bridge._serial = b2
-        self.bridge._connected = True
+        self.bridge = SerialBridge(
+            auth_service=self.auth,
+            serial_instance=b2,
+            lockout_duration=2.0,
+        )
+        self.bridge.lockout_duration = 2.0
+        self.bridge.start()
 
         # Enter remaining 2 digits and submit
         sub = self.sim.press_keys("78#")
@@ -887,6 +894,8 @@ class TestTier3_CrossFeatureCombinations(unittest.TestCase):
         c2.write(sub.encode("ascii"))
         resp = c2.read(1).decode("ascii")
         self.assertEqual(resp, "1")
+        act = self.sim.handle_uart_response(resp)
+        self.assertEqual(act["action"], "ACCESS_GRANTED")
 
     def test_t3_05_multiuser_interleaved_logins_audit_trail(self):
         logins = [
@@ -966,6 +975,7 @@ class TestTier4_RealWorldApplicationScenarios(unittest.TestCase):
             serial_instance=self.bridge_serial,
             lockout_duration=5.0,
         )
+        self.bridge.lockout_duration = 5.0
         self.bridge.start()
         self.sim = FirmwareKeypadSimulator()
 
@@ -1117,6 +1127,7 @@ class TestTier4_RealWorldApplicationScenarios(unittest.TestCase):
             serial_instance=self.bridge_serial,
             lockout_duration=30.0,
         )
+        self.bridge.lockout_duration = 30.0
         self.bridge.start()
 
         # Trigger lockout
