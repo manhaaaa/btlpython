@@ -1,8 +1,8 @@
 {
   "serial": {
-    "port": "COM2",
+    "port": "COM6",
     "baudrate": 9600,
-    "timeout": 1.0,
+    "timeout": 0.1,
     "lockout_duration": 30.0
   },
   "auth": {

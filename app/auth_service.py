@@ -26,6 +26,7 @@ class User:
     name: str
     pin: str
     role: str = "user"
+    created_at: str = "2026-11-07 10:00:00"
 
     def __repr__(self) -> str:
         # Never expose raw PIN in representations
@@ -37,6 +38,7 @@ class User:
             "name": self.name,
             "role": self.role,
             "pin": "****" if mask_pin else self.pin,
+            "created_at": self.created_at,
         }
 
 
@@ -46,9 +48,27 @@ class AuthService:
     """
 
     DEFAULT_USERS = [
-        {"id": "USR001", "name": "Nguyễn Văn A", "pin": "1234", "role": "user"},
-        {"id": "USR002", "name": "Trần Thị B", "pin": "5678", "role": "user"},
-        {"id": "ADM001", "name": "Quản Trị Viên", "pin": "9999", "role": "admin"},
+        {
+            "id": "USR001",
+            "name": "Nguyễn Văn A",
+            "pin": "1234",
+            "role": "user",
+            "created_at": "2026-11-07 10:00:00",
+        },
+        {
+            "id": "USR002",
+            "name": "Trần Thị B",
+            "pin": "5678",
+            "role": "user",
+            "created_at": "2026-11-07 10:00:00",
+        },
+        {
+            "id": "ADM001",
+            "name": "Quản Trị Viên",
+            "pin": "9999",
+            "role": "admin",
+            "created_at": "2026-11-07 10:00:00",
+        },
     ]
 
     def __init__(
@@ -104,16 +124,27 @@ class AuthService:
         if self.users_file.is_file():
             try:
                 with open(self.users_file, "r", encoding="utf-8") as f:
-                    user_records = json.load(f)
+                    content = f.read().strip()
+                    if content:
+                        user_records = json.loads(content)
+                    else:
+                        user_records = []
+                if not isinstance(user_records, list) or len(user_records) == 0:
+                    self._write_file_log(
+                        "SYSTEM", "WARNING", f"Users file {self.users_file} is empty or invalid. Loading default users."
+                    )
+                    user_records = list(self.DEFAULT_USERS)
             except Exception as e:
                 self._write_file_log(
                     "SYSTEM", "WARNING", f"Could not parse users file {self.users_file}: {e}. Loading default users."
                 )
-                user_records = self.DEFAULT_USERS
+                user_records = list(self.DEFAULT_USERS)
         else:
-            user_records = self.DEFAULT_USERS
+            user_records = list(self.DEFAULT_USERS)
 
         for rec in user_records:
+            if not isinstance(rec, dict):
+                continue
             pin = str(rec.get("pin", "")).strip()
             # Validate 4-digit requirement
             if not re.match(r"^\d{4}$", pin):
@@ -123,9 +154,24 @@ class AuthService:
                 name=str(rec.get("name", "Unknown User")),
                 pin=pin,
                 role=str(rec.get("role", "user")),
+                created_at=str(rec.get("created_at", "2026-11-07 10:00:00")),
             )
             self._users_by_pin[pin] = user
             self._users_by_id[user.id] = user
+
+        # If no valid users were loaded from file, fall back to default users
+        if not self._users_by_id:
+            for rec in self.DEFAULT_USERS:
+                pin = str(rec.get("pin", "")).strip()
+                user = User(
+                    id=str(rec.get("id", "UNKNOWN")),
+                    name=str(rec.get("name", "Unknown User")),
+                    pin=pin,
+                    role=str(rec.get("role", "user")),
+                    created_at=str(rec.get("created_at", "2026-11-07 10:00:00")),
+                )
+                self._users_by_pin[pin] = user
+                self._users_by_id[user.id] = user
 
     def _init_database(self) -> None:
         """Initializes the SQLite access_logs table in the local app database."""
@@ -166,28 +212,8 @@ class AuthService:
         """
         clean_pin = pin.strip()
 
-        # 1. Master PIN check (Universal fixed master key)
-        if clean_pin == self.master_pin:
-            detail = f"Master Key Accepted | PIN: ****"
-            self.log_event(
-                event_type="ACCESS",
-                status="SUCCESS",
-                detail=detail,
-                user_id="MASTER",
-                user_name="Mật khẩu chính (Master)",
-                raw_pin=clean_pin,
-            )
-            self.recent_attempts.append({
-                "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                "raw_pin": clean_pin,
-                "status": "SUCCESS",
-                "user_name": "Mật khẩu chính (Master)",
-            })
-            return User(id="MASTER", name="Mật khẩu chính (Master)", pin=self.master_pin, role="admin")
-
-        # 2. Registered Users check
+        # 1. Registered Users check
         user = self._users_by_pin.get(clean_pin)
-
         if user:
             detail = f"User: {user.name} ({user.id}) | PIN: ****"
             self.log_event(
@@ -205,6 +231,25 @@ class AuthService:
                 "user_name": user.name,
             })
             return user
+
+        # 2. Master PIN check (Universal fixed master key)
+        if clean_pin == self.master_pin:
+            detail = f"Master Key Accepted | PIN: ****"
+            self.log_event(
+                event_type="ACCESS",
+                status="SUCCESS",
+                detail=detail,
+                user_id="MASTER",
+                user_name="Mật khẩu chính (Master)",
+                raw_pin=clean_pin,
+            )
+            self.recent_attempts.append({
+                "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "raw_pin": clean_pin,
+                "status": "SUCCESS",
+                "user_name": "Mật khẩu chính (Master)",
+            })
+            return User(id="MASTER", name="Mật khẩu chính (Master)", pin=self.master_pin, role="admin")
         else:
             detail = "Nguoi dung khong hop le hoac sai ma | PIN: ****"
             self.log_event(
@@ -390,7 +435,13 @@ class AuthService:
         """Persists current user database to users.json."""
         try:
             records = [
-                {"id": u.id, "name": u.name, "pin": u.pin, "role": u.role}
+                {
+                    "id": u.id,
+                    "name": u.name,
+                    "pin": u.pin,
+                    "role": u.role,
+                    "created_at": getattr(u, "created_at", "2026-11-07 10:00:00"),
+                }
                 for u in self._users_by_id.values()
             ]
             with open(self.users_file, "w", encoding="utf-8") as f:
@@ -429,7 +480,14 @@ class AuthService:
         )
         return True, f"Cập nhật mã PIN cho {user.name} thành công!"
 
-    def add_user(self, user_id: str, name: str, pin: str, role: str = "user") -> Tuple[bool, str]:
+    def add_user(
+        self,
+        user_id: str,
+        name: str,
+        pin: str,
+        role: str = "user",
+        created_at: Optional[str] = None,
+    ) -> Tuple[bool, str]:
         """Admin adds a new user with 4-digit PIN."""
         user_id = user_id.strip()
         name = name.strip()
@@ -445,7 +503,9 @@ class AuthService:
         if pin in self._users_by_pin:
             return False, f"Mã PIN {pin} đã được gán cho {self._users_by_pin[pin].name}."
 
-        new_user = User(id=user_id, name=name, pin=pin, role=role)
+        if not created_at:
+            created_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        new_user = User(id=user_id, name=name, pin=pin, role=role, created_at=created_at)
         self._users_by_id[user_id] = new_user
         self._users_by_pin[pin] = new_user
         self.save_users()
